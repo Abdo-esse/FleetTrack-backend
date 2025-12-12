@@ -1,0 +1,57 @@
+{
+  "name": "fleettrack-backend",
+  "version": "1.0.0",
+  "description": "Backend RESTful pour FleetTrack, un système  de suivi des trajets, carburant et maintenance pour flotte de camions. Gère les administrateurs, conducteurs, véhicules, trajets, carburant, maintenance et rapports. Architecture modulaire, sécurisée et extensible, prête pour le cloud et le déploiement professionnel.",
+  "main": "src/app.js",
+  "type": "module",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --recursive tests",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abdo-esse/FleetTrack-backend.git"
+  },
+  "author": "Abdel Ilah ESSEMLALI",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Abdo-esse/FleetTrack-backend/issues"
+  },
+  "homepage": "https://github.com/Abdo-esse/FleetTrack-backend#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "bull": "^4.16.5",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "helmet": "^8.1.0",
+    "joi": "^18.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.9",
+    "parse-duration": "^2.1.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^13.0.0",
+    "winston": "^3.18.3"
+  },
+  "devDependencies": {
+    "chai": "^6.2.0",
+    "cross-env": "^10.1.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "mocha": "^11.7.4",
+    "mongodb-memory-server": "^10.2.3",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
+  }
+}
