@@ -10,12 +10,12 @@ services:
     env_file:
       - .env
     ports:
-      - "9000:9000"
+      - '9000:9000'
     depends_on:
       - mongodb
     volumes:
-      - .:/app      # monte ton code
-      - node_modules:/app/node_modules  # empêche l'écrasement dans le container
+      - .:/app # monte ton code
+      - node_modules:/app/node_modules # empêche l'écrasement dans le container
 
     networks:
       - fleetrack-network
@@ -28,7 +28,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - "${MONGO_DB_PORT}:27017"
+      - '${MONGO_DB_PORT}:27017'
     volumes:
       - mongo-data:/data/db
     networks:
@@ -47,7 +47,7 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin
     ports:
-      - "${MONGO_EXPRESS_PORT}:8081"
+      - '${MONGO_EXPRESS_PORT}:8081'
     networks:
       - fleetrack-network
 

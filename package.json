@@ -10,7 +10,10 @@
   "scripts": {
     "test": "mocha --recursive tests",
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -44,14 +47,20 @@
     "winston": "^3.18.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "chai": "^6.2.0",
     "cross-env": "^10.1.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-security": "^3.0.1",
     "mocha": "^11.7.4",
     "mongodb-memory-server": "^10.2.3",
     "nodemon": "^3.1.10",
+    "prettier": "^3.7.4",
     "supertest": "^7.1.4"
   }
 }
