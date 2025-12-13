@@ -17,7 +17,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
-        ...globals.node,
+        ...globals.node, // Node.js globals
       },
     },
 
@@ -29,12 +29,10 @@ export default [
     },
 
     rules: {
-      // CORE
       'no-unused-vars': ['warn', { argsIgnorePattern: 'next' }],
       'no-undef': 'error',
       'no-console': 'off',
 
-      // IMPORT
       'import/no-unresolved': 'error',
       'import/order': [
         'error',
@@ -44,16 +42,22 @@ export default [
         },
       ],
 
-      // SECURITY
       'security/detect-object-injection': 'off',
 
-      // PRETTIER
-      'prettier/prettier': [
-        'error',
-        {
-          endOfLine: 'auto',
-        },
-      ],
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    },
+  },
+
+  // Override Jest
+  {
+    files: ['tests/**/*.js', '**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+    rules: {
+      'no-undef': 'off',
     },
   },
 

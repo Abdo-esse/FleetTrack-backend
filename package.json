@@ -8,7 +8,12 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha --recursive tests",
+    "test": "cross-env NODE_ENV=test jest --runInBand",
+    "test:unit": "cross-env NODE_ENV=test jest --config=jest.unit.config.cjs",
+    "test:unit:watch": "cross-env NODE_ENV=test jest --config=jest.unit.config.cjs --watch",
+    "test:unit:coverage": "cross-env NODE_ENV=test jest --config=jest.unit.config.cjs --coverage",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "lint": "eslint .",
@@ -47,7 +52,11 @@
     "winston": "^3.18.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/plugin-syntax-import-meta": "^7.10.4",
+    "@babel/preset-env": "^7.28.5",
     "@eslint/js": "^9.39.1",
+    "babel-jest": "^30.2.0",
     "chai": "^6.2.0",
     "cross-env": "^10.1.0",
     "eslint": "^8.57.1",
@@ -57,8 +66,9 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-security": "^3.0.1",
+    "jest": "^30.2.0",
     "mocha": "^11.7.4",
-    "mongodb-memory-server": "^10.2.3",
+    "mongodb-memory-server": "^10.4.1",
     "nodemon": "^3.1.10",
     "prettier": "^3.7.4",
     "supertest": "^7.1.4"
