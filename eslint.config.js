@@ -4,6 +4,7 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import securityPlugin from 'eslint-plugin-security';
 import nodePlugin from 'eslint-plugin-node';
+import globals from 'globals';
 
 export default [
   js.configs.recommended,
@@ -15,6 +16,9 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      globals: {
+        ...globals.node, // Node.js globals
+      },
     },
 
     plugins: {
@@ -25,11 +29,10 @@ export default [
     },
 
     rules: {
-      'no-unused-vars': 'warn',
+      'no-unused-vars': ['warn', { argsIgnorePattern: 'next' }],
       'no-undef': 'error',
       'no-console': 'off',
 
-      // IMPORT rules
       'import/no-unresolved': 'error',
       'import/order': [
         'error',
@@ -39,16 +42,22 @@ export default [
         },
       ],
 
-      // SECURITY rules
       'security/detect-object-injection': 'off',
 
-      // PRETTIER rules
-      'prettier/prettier': [
-        'error',
-        {
-          endOfLine: 'auto',
-        },
-      ],
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    },
+  },
+
+  // Override Jest
+  {
+    files: ['tests/**/*.js', '**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+    rules: {
+      'no-undef': 'off',
     },
   },
 

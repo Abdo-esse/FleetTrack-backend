@@ -8,7 +8,7 @@ const logger = createLogger({
     format.splat(),
     format.json()
   ),
-  defaultMeta: { service: 'careflow-api' },
+  defaultMeta: { service: 'fleettrack-api' },
   transports: [
     new transports.Console({
       format: format.combine(format.colorize(), format.simple()),
