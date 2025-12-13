@@ -3,6 +3,7 @@ import express from 'express';
 import authRoutes from './auth.js';
 import truckRoutes from './truck.routes.js';
 import trailerRoutes from './trailer.routes.js';
+import tireRoutes from './tire.routes.js';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.get('/', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/trucks', truckRoutes);
 router.use('/trailers', trailerRoutes);
+router.use('/tires', tireRoutes);
 
 export default router;
