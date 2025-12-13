@@ -11,6 +11,9 @@ import logger from './utils/logger.js';
 import { setupSwagger } from './config/swagger.js';
 import errorMiddleware from './middleware/error.middleware.js';
 import { httpLogger } from './utils/httpLogger.js';
+import routes from './routes/index.js';
+
+// === Load environment variables and initialize app ===
 
 dotenv.config();
 const app = express();
@@ -44,6 +47,9 @@ app.get('/api/v1/health', (req, res) => {
 
 // === Swagger Setup ===
 setupSwagger(app);
+
+// === Main API routes ===
+app.use('/api/v1', routes);
 
 // === 404 Handler ===
 app.use((req, res, next) => {

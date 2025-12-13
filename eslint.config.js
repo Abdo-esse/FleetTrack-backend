@@ -4,6 +4,7 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import securityPlugin from 'eslint-plugin-security';
 import nodePlugin from 'eslint-plugin-node';
+import globals from 'globals';
 
 export default [
   js.configs.recommended,
@@ -15,6 +16,9 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
     },
 
     plugins: {
@@ -25,11 +29,12 @@ export default [
     },
 
     rules: {
-      'no-unused-vars': 'warn',
+      // CORE
+      'no-unused-vars': ['warn', { argsIgnorePattern: 'next' }],
       'no-undef': 'error',
       'no-console': 'off',
 
-      // IMPORT rules
+      // IMPORT
       'import/no-unresolved': 'error',
       'import/order': [
         'error',
@@ -39,10 +44,10 @@ export default [
         },
       ],
 
-      // SECURITY rules
+      // SECURITY
       'security/detect-object-injection': 'off',
 
-      // PRETTIER rules
+      // PRETTIER
       'prettier/prettier': [
         'error',
         {
