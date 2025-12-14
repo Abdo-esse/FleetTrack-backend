@@ -8,17 +8,15 @@
     "test": "test"
   },
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --runInBand",
     "test:unit": "cross-env NODE_ENV=test jest --config=jest.unit.config.cjs",
     "test:unit:watch": "cross-env NODE_ENV=test jest --config=jest.unit.config.cjs --watch",
     "test:unit:coverage": "cross-env NODE_ENV=test jest --config=jest.unit.config.cjs --coverage",
-    "test:watch": "cross-env NODE_ENV=test jest --watch",
-    "test:coverage": "cross-env NODE_ENV=test jest --coverage",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "seed:admin": "node src/scripts/seedAdmin.js"
   },
   "repository": {
     "type": "git",
