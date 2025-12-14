@@ -33,3 +33,13 @@ export const updateTireSchema = Joi.object({
   truckId: Joi.string().optional().allow(null),
   trailerId: Joi.string().optional().allow(null),
 });
+
+export const assignTireSchema = Joi.object({
+  truckId: Joi.string().allow(null),
+  trailerId: Joi.string().allow(null),
+});
+
+export const updateWearSchema = Joi.object({
+  wearLevel: Joi.number().min(0).max(100).required(),
+  note: Joi.string().optional(),
+});

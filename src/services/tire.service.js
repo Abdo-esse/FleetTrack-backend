@@ -1,5 +1,6 @@
 // src/services/tire.service.js
 import Tire from '../models/tire.js';
+import TireWearHistory from '../models/tireWearHistory.js';
 
 export const createTire = async (data) => {
   return Tire.create(data);
@@ -57,4 +58,50 @@ export const updateTire = async (id, data) => {
 export const deleteTire = async (id) => {
   const tire = await Tire.findByIdAndDelete(id);
   if (!tire) throw new Error('Tire not found');
+};
+
+export const assignTire = async (tireId, { truckId, trailerId }) => {
+  if (truckId && trailerId) {
+    throw new Error('Tire cannot be assigned to both truck and trailer');
+  }
+
+  const tire = await Tire.findByIdAndUpdate(
+    tireId,
+    {
+      truckId: truckId || null,
+      trailerId: trailerId || null,
+    },
+    { new: true }
+  );
+
+  if (!tire) throw new Error('Tire not found');
+  return tire;
+};
+
+export const updateWear = async (tireId, { wearLevel, note }, userId) => {
+  const tire = await Tire.findById(tireId);
+  if (!tire) throw new Error('Tire not found');
+
+  if (wearLevel < tire.wearLevel) {
+    throw new Error('Wear level cannot decrease');
+  }
+
+  await TireWearHistory.create({
+    tireId: tire._id,
+    oldWearLevel: tire.wearLevel,
+    newWearLevel: wearLevel,
+    updatedBy: userId,
+    note,
+  });
+
+  tire.wearLevel = wearLevel;
+  await tire.save();
+
+  return tire;
+};
+
+export const getWearHistory = async (tireId) => {
+  return TireWearHistory.find({ tireId })
+    .sort({ createdAt: -1 })
+    .populate('updatedBy', 'name email');
 };

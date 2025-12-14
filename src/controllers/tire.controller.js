@@ -45,3 +45,30 @@ export const deleteTire = async (req, res, next) => {
     next(error);
   }
 };
+
+export const assignTire = async (req, res, next) => {
+  try {
+    const tire = await tireService.assignTire(req.params.id, req.body);
+    res.status(200).json({ tire, message: 'Tire assigned successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateWear = async (req, res, next) => {
+  try {
+    const tire = await tireService.updateWear(req.params.id, req.body, req.user.id);
+    res.status(200).json({ tire, message: 'Wear level updated' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getWearHistory = async (req, res, next) => {
+  try {
+    const history = await tireService.getWearHistory(req.params.id);
+    res.status(200).json(history);
+  } catch (error) {
+    next(error);
+  }
+};
