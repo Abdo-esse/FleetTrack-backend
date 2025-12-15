@@ -53,6 +53,19 @@ export const getTrailerAlerts = async (req, res, next) => {
   }
 };
 
+export const resolveMaintenanceAlert = async (req, res, next) => {
+  try {
+    const alert = await maintenanceService.resolveMaintenanceAlert(req.params.id, req.user.id);
+
+    res.status(200).json({
+      alert,
+      message: 'Maintenance alert resolved successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 /* ================= RECORDS ================= */
 
 export const getMaintenanceRecords = async (req, res, next) => {

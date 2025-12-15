@@ -183,3 +183,23 @@ export const createMaintenanceRecord = async (data) => {
 
   return record;
 };
+
+export const resolveMaintenanceAlert = async (alertId, userId) => {
+  const alert = await MaintenanceAlert.findById(alertId);
+
+  if (!alert) {
+    throw new Error('Maintenance alert not found');
+  }
+
+  if (alert.status === 'resolved') {
+    throw new Error('Maintenance alert already resolved');
+  }
+
+  alert.status = 'resolved';
+  alert.resolvedAt = new Date();
+  alert.resolvedBy = userId;
+
+  await alert.save();
+
+  return alert;
+};

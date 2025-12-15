@@ -18,6 +18,12 @@ router.get('/alerts/tires/:id', authorize('Admin'), maintenanceController.getTir
 
 router.get('/alerts/trailers/:id', authorize('Admin'), maintenanceController.getTrailerAlerts);
 
+router.patch(
+  '/alerts/:id/resolve',
+  authorize('Admin'),
+  maintenanceController.resolveMaintenanceAlert
+);
+
 /* ===== RECORDS ===== */
 router.get('/records', authorize('Admin'), maintenanceController.getMaintenanceRecords);
 
