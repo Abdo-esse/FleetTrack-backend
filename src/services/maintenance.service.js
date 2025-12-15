@@ -1,7 +1,72 @@
 // src/services/maintenance.service.js
 import MaintenanceRule from '../models/maintenanceRule.js';
 import MaintenanceRecord from '../models/maintenanceRecord.js';
-import Truck from '../models/truck.js';
+import MaintenanceAlert from '../models/maintenanceAlert.js';
+
+import { resolveAlerts } from './maintenanceAlert.service.js';
+
+export const getMaintenanceAlerts = async (query) => {
+  const {
+    page = 1,
+    limit = 10,
+    status = 'active', // active | resolved | all
+    targetType, // Truck | Trailer | Tire
+    search, // id véhicule
+    sort = 'triggeredAt:desc',
+  } = query;
+
+  /* Pagination */
+  const pageNumber = Math.max(parseInt(page, 10), 1);
+  const limitNumber = Math.max(parseInt(limit, 10), 1);
+  const skip = (pageNumber - 1) * limitNumber;
+
+  /* Filtres */
+  const filters = {};
+
+  if (status !== 'all') {
+    filters.status = status;
+  }
+
+  if (targetType) {
+    filters.targetType = targetType;
+  }
+
+  if (search) {
+    filters.targetId = search;
+  }
+
+  /* Tri */
+  const [sortField, sortOrder] = sort.split(':');
+  const sortOptions = {
+    [sortField]: sortOrder === 'asc' ? 1 : -1,
+  };
+
+  /* Query */
+  const [alerts, total] = await Promise.all([
+    MaintenanceAlert.find(filters)
+      .populate('ruleId', 'name description')
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNumber),
+    MaintenanceAlert.countDocuments(filters),
+  ]);
+
+  return {
+    data: alerts,
+    pagination: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+    filtersApplied: {
+      status,
+      targetType,
+      search,
+      sort,
+    },
+  };
+};
 
 export const checkTruckMaintenance = async (truck) => {
   const rules = await MaintenanceRule.find({
@@ -31,6 +96,7 @@ export const checkTruckMaintenance = async (truck) => {
 
     if (dueByKm || dueByTime) {
       alerts.push({
+        ruleId: rule._id,
         rule: rule.name,
         dueByKm,
         dueByTime,
@@ -52,6 +118,7 @@ export const checkTireMaintenance = async (tire) => {
   for (const rule of rules) {
     if (rule.wearThreshold !== undefined && tire.wearLevel >= rule.wearThreshold) {
       alerts.push({
+        ruleId: rule._id,
         rule: rule.name,
         dueByWear: true,
         currentWear: tire.wearLevel,
@@ -102,7 +169,7 @@ export const checkTrailerMaintenance = async (trailer) => {
 };
 
 export const createMaintenanceRecord = async (data) => {
-  return MaintenanceRecord.create({
+  const record = await MaintenanceRecord.create({
     ruleId: data.ruleId,
     targetId: data.targetId,
     targetType: data.targetType,
@@ -111,14 +178,8 @@ export const createMaintenanceRecord = async (data) => {
     cost: data.cost,
     notes: data.notes,
   });
-};
 
-export const getTruckMaintenanceAlerts = async (truckId) => {
-  const truck = await Truck.findById(truckId);
+  await resolveAlerts(data.ruleId, data.targetId);
 
-  if (!truck) {
-    throw new Error('Truck not found');
-  }
-
-  return checkTruckMaintenance(truck);
+  return record;
 };

@@ -10,6 +10,8 @@ const router = express.Router();
 router.use(authenticate);
 
 /* ===== ALERTS ===== */
+router.get('/alerts', authorize('Admin'), maintenanceController.getMaintenanceAlerts);
+
 router.get('/alerts/trucks/:id', authorize('Admin'), maintenanceController.getTruckAlerts);
 
 router.get('/alerts/tires/:id', authorize('Admin'), maintenanceController.getTireAlerts);

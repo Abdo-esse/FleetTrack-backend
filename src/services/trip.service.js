@@ -3,6 +3,8 @@ import Trip from '../models/trip.js';
 import Truck from '../models/truck.js';
 
 import { calculateConsumption } from './fuelRecord.service.js';
+import { checkTruckMaintenance } from './maintenance.service.js';
+import { triggerAlert } from './maintenanceAlert.service.js';
 
 export const createTrip = async (data) => {
   return Trip.create(data);
@@ -113,6 +115,21 @@ export const completeTrip = async (tripId, data) => {
   await Truck.findByIdAndUpdate(trip.truckId, {
     mileage: data.arrivalMileage,
   });
+
+  const truck = await Truck.findById(trip.truckId);
+
+  /* 🔔 Vérification maintenance camion */
+  const alerts = await checkTruckMaintenance(truck);
+
+  for (const alert of alerts) {
+    await triggerAlert({
+      ruleId: alert.ruleId,
+      targetType: 'Truck',
+      targetId: truck._id,
+      reason: alert.dueByKm ? 'dueByKm' : 'dueByTime',
+      details: alert,
+    });
+  }
 
   await calculateConsumption(trip._id);
 

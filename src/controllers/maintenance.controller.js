@@ -7,6 +7,16 @@ import MaintenanceRecord from '../models/maintenanceRecord.js';
 
 /* ================= ALERTS ================= */
 
+export const getMaintenanceAlerts = async (req, res, next) => {
+  try {
+    const result = await maintenanceService.getMaintenanceAlerts(req.query);
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getTruckAlerts = async (req, res, next) => {
   try {
     const truck = await Truck.findById(req.params.id);

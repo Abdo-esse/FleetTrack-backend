@@ -2,6 +2,9 @@
 import Tire from '../models/tire.js';
 import TireWearHistory from '../models/tireWearHistory.js';
 
+import { checkTireMaintenance } from './maintenance.service.js';
+import { triggerAlert } from './maintenanceAlert.service.js';
+
 export const createTire = async (data) => {
   return Tire.create(data);
 };
@@ -96,6 +99,18 @@ export const updateWear = async (tireId, { wearLevel, note }, userId) => {
 
   tire.wearLevel = wearLevel;
   await tire.save();
+
+  const alerts = await checkTireMaintenance(tire);
+
+  for (const alert of alerts) {
+    await triggerAlert({
+      ruleId: alert.ruleId,
+      targetType: 'Tire',
+      targetId: tire._id,
+      reason: 'dueByWear',
+      details: alert,
+    });
+  }
 
   return tire;
 };
