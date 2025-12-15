@@ -6,6 +6,8 @@ import trailerRoutes from './trailer.routes.js';
 import tireRoutes from './tire.routes.js';
 import fuelRoutes from './fuelRecord.routes.js';
 import tripRoutes from './trip.routes.js';
+import driverRoutes from './driver.routes.js';
+import maintenanceRuleRoutes from './maintenanceRule.routes.js';
 
 const router = express.Router();
 
@@ -18,5 +20,7 @@ router.use('/trailers', trailerRoutes);
 router.use('/tires', tireRoutes);
 router.use('/fuel', fuelRoutes);
 router.use('/trips', tripRoutes);
+router.use('/drivers', driverRoutes);
+router.use('/maintenance-rules', maintenanceRuleRoutes);
 
 export default router;
