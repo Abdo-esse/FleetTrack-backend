@@ -16,7 +16,9 @@ export const generateMissionOrderPdf = async (tripId) => {
   const html = buildHtmlTemplate(trip);
 
   const browser = await puppeteer.launch({
+    executablePath: process.env.CHROME_PATH,
     headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
   const page = await browser.newPage();

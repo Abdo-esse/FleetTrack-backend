@@ -23,13 +23,14 @@ export const buildHtmlTemplate = (trip) => {
     <h1>Ordre de mission</h1>
 
     <div class="section">
-      <p><span class="label">Mission N° :</span> ${trip._id}</p>
+      <p><span class="label">Mission N° :</span> ${trip._id || 'Non spécifié trip._id'}</p>
       <p><span class="label">Date :</span> ${new Date().toLocaleDateString()}</p>
     </div>
 
     <div class="section">
       <h3>Chauffeur</h3>
-      <p>${driver.name}</p>
+      <p>${driver.name || 'Non spécifié driver.name'}</p>
+
     </div>
 
     <div class="section">
@@ -40,7 +41,7 @@ export const buildHtmlTemplate = (trip) => {
           <th>Remorque</th>
         </tr>
         <tr>
-          <td>${truck.registrationNumber} - ${truck.brand} ${truck.model}</td>
+          <td>${truck.registrationNumber || 'Non spécifié truck.registrationNumber'} - ${truck.brand || 'Non spécifié truck.brand'} ${truck.model || 'Non spécifié truck.model'}</td>
           <td>${trailer ? trailer.registrationNumber : 'Aucune'}</td>
         </tr>
       </table>
@@ -56,9 +57,9 @@ export const buildHtmlTemplate = (trip) => {
           <th>KM Retour</th>
         </tr>
         <tr>
-          <td>${trip.origin}</td>
-          <td>${trip.destination}</td>
-          <td>${trip.departureMileage}</td>
+          <td>${trip.origin || 'Non spécifié trip.origin'}</td>
+          <td>${trip.destination || 'Non spécifié trip.destination'}</td>
+          <td>${trip.departureMileage || 'Non spécifié trip.departureMileage'}</td>
           <td>__________</td>
         </tr>
       </table>

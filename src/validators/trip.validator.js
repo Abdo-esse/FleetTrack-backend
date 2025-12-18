@@ -6,8 +6,7 @@ export const createTripSchema = Joi.object({
   trailerId: Joi.string().optional().allow(null),
   origin: Joi.string().required(),
   destination: Joi.string().required(),
-  distanceKm: Joi.number().positive().optional(),
-  startDate: Joi.date().optional(),
+  departureMileage: Joi.number().positive().optional(),
 });
 
 export const assignDriverSchema = Joi.object({
@@ -16,5 +15,6 @@ export const assignDriverSchema = Joi.object({
 
 export const updateTripStatusSchema = Joi.object({
   status: Joi.string().valid('planned', 'in_progress', 'completed', 'cancelled').required(),
-  endDate: Joi.date().optional(),
+  departureMileage: Joi.number().positive().optional(),
+
 });

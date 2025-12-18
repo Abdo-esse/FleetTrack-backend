@@ -4,6 +4,10 @@ import MaintenanceRecord from '../models/maintenanceRecord.js';
 import MaintenanceAlert from '../models/maintenanceAlert.js';
 
 import { resolveAlerts } from './maintenanceAlert.service.js';
+import Truck from '../models/truck.js';
+import Trailer from '../models/trailer.js';
+import Tire from '../models/tire.js';
+import { triggerAlert } from './maintenanceAlert.service.js';
 
 export const getMaintenanceAlerts = async (query) => {
   const {
@@ -14,6 +18,11 @@ export const getMaintenanceAlerts = async (query) => {
     search, // id véhicule
     sort = 'triggeredAt:desc',
   } = query;
+
+  /* Check maintenance */
+  console.log('Checking maintenance...');
+  await checkMaintenance();
+  console.log('Maintenance checked');
 
   /* Pagination */
   const pageNumber = Math.max(parseInt(page, 10), 1);
@@ -40,7 +49,6 @@ export const getMaintenanceAlerts = async (query) => {
   const sortOptions = {
     [sortField]: sortOrder === 'asc' ? 1 : -1,
   };
-
   /* Query */
   const [alerts, total] = await Promise.all([
     MaintenanceAlert.find(filters)
@@ -69,6 +77,7 @@ export const getMaintenanceAlerts = async (query) => {
 };
 
 export const checkTruckMaintenance = async (truck) => {
+  console.log(truck.mileage);
   const rules = await MaintenanceRule.find({
     targetType: 'Truck',
     isActive: true,
@@ -86,12 +95,18 @@ export const checkTruckMaintenance = async (truck) => {
     let dueByTime = false;
 
     if (rule.intervalKm && lastRecord?.mileageAtService !== undefined) {
+      console.log(truck.mileage - lastRecord.mileageAtService);
       dueByKm = truck.mileage - lastRecord.mileageAtService >= rule.intervalKm;
+    }else if(rule.intervalKm && lastRecord?.mileageAtService === undefined){
+      console.log(truck.mileage);
+      dueByKm = truck.mileage >= rule.intervalKm;
     }
 
     if (rule.intervalDays && lastRecord?.performedAt) {
       const days = (Date.now() - lastRecord.performedAt.getTime()) / (1000 * 60 * 60 * 24);
       dueByTime = days >= rule.intervalDays;
+    }else if(rule.intervalDays && lastRecord?.performedAt === undefined){
+      dueByTime = Date.now() >= rule.intervalDays;
     }
 
     if (dueByKm || dueByTime) {
@@ -108,6 +123,7 @@ export const checkTruckMaintenance = async (truck) => {
 };
 
 export const checkTireMaintenance = async (tire) => {
+  console.log(tire.wearLevel);
   const rules = await MaintenanceRule.find({
     targetType: 'Tire',
     isActive: true,
@@ -117,6 +133,7 @@ export const checkTireMaintenance = async (tire) => {
 
   for (const rule of rules) {
     if (rule.wearThreshold !== undefined && tire.wearLevel >= rule.wearThreshold) {
+      console.log(tire.wearLevel);
       alerts.push({
         ruleId: rule._id,
         rule: rule.name,
@@ -168,6 +185,56 @@ export const checkTrailerMaintenance = async (trailer) => {
   return alerts;
 };
 
+//check maintenance for all vehicles (trucks, trailers, tires), get all trucks, trailers, tires and check maintenance, puis create alerts
+export const checkMaintenance = async () => {
+  console.log('Checking maintenance...');
+  const trucks = await Truck.find({});
+  const trailers = await Trailer.find({});
+  const tires = await Tire.find({});
+
+  for (const truck of trucks) {
+    const alerts = await checkTruckMaintenance(truck);
+    if (alerts.length > 0) {
+      console.log('Triggering alert for truck ' + alerts);
+      await triggerAlert({
+        ruleId: alerts[0].ruleId,
+        targetType: 'Truck',
+        targetId: truck._id,
+        reason: alerts[0].dueByKm ? 'dueByKm' : 'dueByTime',
+        details: alerts[0],
+      });
+    }
+  }
+
+  for (const trailer of trailers) {
+    const alerts = await checkTrailerMaintenance(trailer);
+    if (alerts.length > 0) {
+      console.log('Triggering alert for trailer ' + alerts);
+      await triggerAlert({
+        ruleId: alerts[0].ruleId,
+        targetType: 'Trailer',
+        targetId: trailer._id,
+        reason: alerts[0].dueByKm ? 'dueByKm' : 'dueByTime',
+        details: alerts[0],
+      });
+    }
+  }
+
+  for (const tire of tires) {
+    const alerts = await checkTireMaintenance(tire);
+    if (alerts.length > 0) {
+      console.log('Triggering alert for tire ' + alerts);
+      await triggerAlert({
+        ruleId: alerts[0].ruleId,
+        targetType: 'Tire',
+        targetId: tire._id,
+        reason: alerts[0].dueByWear ? 'dueByWear' : 'dueByTime',
+        details: alerts[0],
+      });
+    }
+  }
+};
+
 export const createMaintenanceRecord = async (data) => {
   const record = await MaintenanceRecord.create({
     ruleId: data.ruleId,
@@ -184,22 +251,14 @@ export const createMaintenanceRecord = async (data) => {
   return record;
 };
 
-export const resolveMaintenanceAlert = async (alertId, userId) => {
+export const resolveMaintenanceAlert = async (alertId) => {
   const alert = await MaintenanceAlert.findById(alertId);
 
   if (!alert) {
     throw new Error('Maintenance alert not found');
   }
-
-  if (alert.status === 'resolved') {
-    throw new Error('Maintenance alert already resolved');
-  }
-
-  alert.status = 'resolved';
-  alert.resolvedAt = new Date();
-  alert.resolvedBy = userId;
-
-  await alert.save();
+    console.log("debut de resolveAlerts");
+   await resolveAlerts(alert.ruleId, alert.targetId);
 
   return alert;
 };

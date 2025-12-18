@@ -1,20 +1,25 @@
-# Utiliser une image Node légère
 FROM node:20-alpine
 
-# Définir le répertoire de travail
+# Installer Chromium + dépendances nécessaires
+RUN apk add --no-cache \
+  chromium \
+  nss \
+  freetype \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont
+
+# Variables d’environnement Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV CHROME_PATH=/usr/bin/chromium-browser
+
 WORKDIR /app
-
-# Copier les fichiers nécessaires
+    
 COPY package*.json ./
-
-# Installer les dépendances
 RUN npm install --production
 
-# Copier tout le code source
 COPY . .
 
-# Exposer le port de l'application
 EXPOSE 9000
 
-# Démarrage du serveur
 CMD ["npm", "run", "dev"]

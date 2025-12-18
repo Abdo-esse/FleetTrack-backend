@@ -10,6 +10,8 @@ import {
   assignDriverSchema,
   updateTripStatusSchema,
 } from '../validators/trip.validator.js';
+import { getMissionOrderPdf } from '../controllers/missionOrder.controller.js';
+
 
 const router = express.Router();
 
@@ -44,6 +46,9 @@ router.get('/:id', tripController.getTrip);
 router.delete('/:id', authorize('Admin'), tripController.deleteTrip);
 
 /* Compléter un trajet (Chauffeur) */
-router.patch('/:id/complete', authorize('Chauffeur'), tripController.completeTrip);
+router.patch('/:id/complete', authorize('Admin','Chauffeur'), tripController.completeTrip);
+
+/* Generer PDF mission order */
+router.get('/:id/telecharge-mission-order', authorize('Admin','Chauffeur'), getMissionOrderPdf);
 
 export default router;

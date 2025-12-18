@@ -7,7 +7,16 @@ import { checkTruckMaintenance } from './maintenance.service.js';
 import { triggerAlert } from './maintenanceAlert.service.js';
 
 export const createTrip = async (data) => {
-  return Trip.create(data);
+  const trip = await Trip.create(data);
+
+  await trip.populate([
+    { path: 'truckId', select: 'registrationNumber' },
+    { path: 'trailerId', select: 'registrationNumber' },
+    { path: 'driverId', select: 'name email' },
+  ]);
+
+  return trip;
+
 };
 
 export const assignDriver = async (tripId, driverId) => {
@@ -19,27 +28,39 @@ export const assignDriver = async (tripId, driverId) => {
   }
 
   trip.driverId = driverId;
-  return trip.save();
+  const tripUpdated = await trip.save();
+
+  await tripUpdated.populate([
+    { path: 'truckId', select: 'registrationNumber' },
+    { path: 'trailerId', select: 'registrationNumber' },
+    { path: 'driverId', select: 'name email' },
+  ]);
+
+  return tripUpdated;
 };
 
-export const updateTripStatus = async (tripId, data, user) => {
+export const updateTripStatus = async (tripId, data) => {
   const trip = await Trip.findById(tripId);
   if (!trip) throw new Error('Trip not found');
 
-  // Chauffeur ne peut modifier que SON trajet
-  if (user.role === 'Chauffeur') {
-    if (!trip.driverId || trip.driverId.toString() !== user.id) {
-      throw new Error('Unauthorized to update this trip');
-    }
-  }
 
   trip.status = data.status;
+  if (data.status === 'in_progress') {
+    trip.departureMileage = data.departureMileage || trip.departureMileage;
+  }
 
   if (data.status === 'completed') {
     trip.endDate = data.endDate || new Date();
   }
 
-  return trip.save();
+  const updatedTrip = await trip.save()
+   await updatedTrip.populate([
+    { path: 'truckId', select: 'registrationNumber' },
+    { path: 'trailerId', select: 'registrationNumber' },
+    { path: 'driverId', select: 'name email' },
+  ]);
+
+  return updatedTrip;
 };
 
 export const getAllTrips = async (query) => {
@@ -108,6 +129,7 @@ export const completeTrip = async (tripId, data) => {
   trip.arrivalMileage = data.arrivalMileage;
   trip.distanceKm = distanceKm;
   trip.status = 'completed';
+  trip.fuelConsumedLiters = data.fuelConsumedLiters;
 
   await trip.save();
 
@@ -133,5 +155,13 @@ export const completeTrip = async (tripId, data) => {
 
   await calculateConsumption(trip._id);
 
-  return trip;
+  const tripUpdated = await trip.save();
+
+  await tripUpdated.populate([
+    { path: 'truckId', select: 'registrationNumber' },
+    { path: 'trailerId', select: 'registrationNumber' },
+    { path: 'driverId', select: 'name email' },
+  ]);
+
+  return tripUpdated;
 };
