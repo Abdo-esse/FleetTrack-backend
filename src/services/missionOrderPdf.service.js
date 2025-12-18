@@ -4,13 +4,10 @@ import Trip from '../models/trip.js';
 import { buildHtmlTemplate } from '../template/missionOrderPdf.js';
 
 export const generateMissionOrderPdf = async (tripId) => {
-  console.log(tripId);
   const trip = await Trip.findById(tripId)
     .populate('truckId')
     .populate('trailerId')
     .populate('driverId');
-
-    console.log(trip);
 
   if (!trip) {
     throw new Error('Trip not found');

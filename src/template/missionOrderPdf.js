@@ -30,6 +30,7 @@ export const buildHtmlTemplate = (trip) => {
     <div class="section">
       <h3>Chauffeur</h3>
       <p>${driver.name || 'Non spécifié driver.name'}</p>
+
     </div>
 
     <div class="section">
