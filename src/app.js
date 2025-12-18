@@ -20,7 +20,7 @@ const app = express();
 
 // === CORS configuration ===
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' ? 'http://localhost:5173' : 'http://localhost:5173',
+  origin: process.env.NODE_ENV === 'production' ? 'http://localhost:5173' : 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],

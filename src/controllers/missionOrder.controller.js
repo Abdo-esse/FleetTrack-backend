@@ -2,18 +2,20 @@ import { generateMissionOrderPdf } from '../services/missionOrderPdf.service.js'
 
 export const getMissionOrderPdf = async (req, res) => {
   try {
-    const { tripId } = req.params;
+    const { id } = req.params;
 
-    const pdfBuffer = await generateMissionOrderPdf(tripId);
+    const pdfBuffer = await generateMissionOrderPdf(id);
 
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename=ordre-mission-${tripId}.pdf`,
-      'Content-Length': pdfBuffer.length,
-    });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=ordre-mission-${id}.pdf`
+    );
+    res.setHeader('Content-Length', pdfBuffer.length);
 
-    res.send(pdfBuffer);
+    res.end(pdfBuffer); // ✅ ENVOI BINAIRE BRUT
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 };

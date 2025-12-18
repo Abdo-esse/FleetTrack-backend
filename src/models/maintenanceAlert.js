@@ -38,7 +38,11 @@ const maintenanceAlertSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    resolvedAt: Date,
+    resolvedAt: {
+      type: Date,
+      default: Date.now
+    },
+
   },
   { timestamps: true }
 );

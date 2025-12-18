@@ -25,7 +25,11 @@ export const getAllTires = async (query) => {
   const sortOptions = { [sortField]: sortOrder === 'asc' ? 1 : -1 };
 
   const [tires, total] = await Promise.all([
-    Tire.find(filters).sort(sortOptions).skip(skip).limit(limitNumber),
+    Tire.find(filters)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNumber)
+      .populate('truckId trailerId'),
     Tire.countDocuments(filters),
   ]);
 
